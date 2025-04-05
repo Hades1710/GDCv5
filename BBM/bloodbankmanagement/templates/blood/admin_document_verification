@@ -1,0 +1,226 @@
+{% extends 'blood/adminbase.html' %}
+{% block content %}
+{% load widget_tweaks %}
+{%load static%}
+<head>
+    <style>
+        .document-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .document-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .document-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .document-body {
+            padding: 20px;
+        }
+
+        .document-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .document-preview {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .document-preview img {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .action-container {
+            text-align: center;
+            padding-top: 10px;
+            border-top: 1px solid #e9ecef;
+            margin-top: 15px;
+        }
+
+        .action-btn {
+            display: inline-block;
+            padding: 8px 20px;
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            color: white;
+            text-decoration: none;
+        }
+
+        .verify-btn {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        }
+
+        .verify-btn:hover {
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.2);
+        }
+
+        .reject-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .reject-btn:hover {
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.2);
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-verified {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            margin: 30px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .no-documents {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<div class="container">
+    <h2 class="section-title">Document Verification</h2>
+    
+    {% if documents %}
+        {% for document in documents %}
+            <div class="document-card">
+                <div class="document-header">
+                    <div>
+                        <span>{{ document.user.get_full_name }}</span>
+                        {% if document.status == 'Pending' %}
+                            <span class="status-badge status-pending">{{ document.status }}</span>
+                        {% elif document.status == 'Verified' %}
+                            <span class="status-badge status-verified">{{ document.status }}</span>
+                        {% else %}
+                            <span class="status-badge status-rejected">{{ document.status }}</span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <span>{{ document.upload_date|date:"F d, Y" }}</span>
+                    </div>
+                </div>
+                
+                <div class="document-body">
+                    <div class="document-info">
+                        <div class="info-item">
+                            <span class="info-label">Document Type</span>
+                            <span class="info-value">{{ document.get_document_type_display }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">User Type</span>
+                            <span class="info-value">{{ document.user_type }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Email</span>
+                            <span class="info-value">{{ document.user.email }}</span>
+                        </div>
+                    </div>
+
+                    <div class="document-preview">
+                        {% if document.document_type == 'ID' %}
+                            <img src="{{ document.id_proof.url }}" alt="ID Proof">
+                        {% elif document.document_type == 'EDU' %}
+                            <img src="{{ document.education_proof.url }}" alt="Education Proof">
+                        {% elif document.document_type == 'INC' %}
+                            <img src="{{ document.income_proof.url }}" alt="Income Proof">
+                        {% elif document.document_type == 'MED' %}
+                            <img src="{{ document.medical_proof.url }}" alt="Medical Proof">
+                        {% endif %}
+                    </div>
+
+                    {% if document.status == 'Pending' %}
+                        <div class="action-container">
+                            <form method="POST" action="{% url 'verify-document' document.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="action-btn verify-btn">Verify Document</button>
+                            </form>
+                            <form method="POST" action="{% url 'reject-document' document.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="action-btn reject-btn">Reject Document</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="no-documents">
+            <i class="fas fa-info-circle"></i> No documents available for verification at the moment.
+        </div>
+    {% endif %}
+</div>
+
+{% endblock content %} 
