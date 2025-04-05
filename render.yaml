@@ -3,7 +3,14 @@ services:
     name: bloodbank-management
     runtime: python
     buildCommand: "./build.sh"
-    startCommand: "cd BBM && gunicorn --pythonpath . wsgi:application"
+    startCommand: >-
+      cd BBM &&
+      if [ -f /tmp/db/db.sqlite3 ]; then
+        ln -sf /tmp/db/db.sqlite3 db.sqlite3;
+      fi &&
+      python manage.py collectstatic --no-input --noinput &&
+      python manage.py migrate --no-input &&
+      gunicorn --pythonpath . wsgi:application
     envVars:
       - key: SECRET_KEY
         value: "+zy!9k=9pql5gz9bkqjore)k6r!%w0atk(@(!(!zvp5e(t2i8n"
