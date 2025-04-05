@@ -35,7 +35,6 @@ ALLOWED_HOSTS = []
 if 'RENDER' in os.environ:
     ALLOWED_HOSTS.extend(['*'])
 
-
 # Application definition
 
 INSTALLED_APPS = [
