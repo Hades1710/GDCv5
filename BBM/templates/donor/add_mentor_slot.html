@@ -1,0 +1,201 @@
+{% extends 'donor/donorbase.html' %}
+{% block content %}
+{% load static %}
+{% load widget_tweaks %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Add Mentoring Slot</h4>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="POST" id="mentorSlotForm">
+                        {% csrf_token %}
+                        
+                        <div class="form-group">
+                            <label for="specialty">Subject/Specialty</label>
+                            <select class="form-control" id="specialty" name="specialty" required>
+                                <option value="">Select your specialty</option>
+                                <option value="mathematics">Mathematics</option>
+                                <option value="science">Science</option>
+                                <option value="english">English</option>
+                                <option value="computer_science">Computer Science</option>
+                                <option value="physics">Physics</option>
+                                <option value="chemistry">Chemistry</option>
+                                <option value="biology">Biology</option>
+                                <option value="history">History</option>
+                                <option value="geography">Geography</option>
+                                <option value="other">Other</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select your teaching specialty.
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="available_date">Available Date</label>
+                            <input type="date" class="form-control" id="available_date" name="available_date" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="available_time">Available Time</label>
+                            <input type="time" class="form-control" id="available_time" name="available_time" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="teaching_mode">Teaching Mode</label>
+                            <select class="form-control" id="teaching_mode" name="teaching_mode" required>
+                                <option value="">Select Teaching Mode</option>
+                                <option value="in_person">In Person</option>
+                                <option value="voice_call">Voice Call</option>
+                                <option value="video_call">Video Call</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Description (Optional)</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Add any specific details about the mentoring session"></textarea>
+                        </div>
+
+                        <!-- Location fields - initially hidden -->
+                        <div id="locationFields" style="display: none;">
+                            <h5 class="mb-3">Location Details</h5>
+                            
+                            <div class="form-group">
+                                <label for="location_name">Location Name</label>
+                                <input type="text" class="form-control" id="location_name" name="location_name">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="address">Address</label>
+                                <input type="text" class="form-control" id="address" name="address">
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="city">City</label>
+                                        <input type="text" class="form-control" id="city" name="city">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="state">State</label>
+                                        <input type="text" class="form-control" id="state" name="state">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="pincode">Pincode</label>
+                                        <input type="text" class="form-control" id="pincode" name="pincode">
+                                    </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                                <label for="map">Location Map</label>
+                                <div id="map" style="height: 300px; width: 100%;"></div>
+                                <input type="hidden" id="latitude" name="latitude">
+                                <input type="hidden" id="longitude" name="longitude">
+                            </div>
+                        </div>
+
+                            <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Slot
+                            </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include Leaflet CSS and JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+<script>
+    let map;
+    let marker;
+
+    // Initialize map when teaching mode is 'in_person'
+    function initMap() {
+        if (!map) {
+            map = L.map('map').setView([20.5937, 78.9629], 5); // Center on India
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+        }
+    }
+
+    // Handle teaching mode change
+    document.getElementById('teaching_mode').addEventListener('change', function() {
+        const locationFields = document.getElementById('locationFields');
+        const locationInputs = locationFields.querySelectorAll('input');
+        
+        if (this.value === 'in_person') {
+            locationFields.style.display = 'block';
+            locationInputs.forEach(input => input.required = true);
+            initMap();
+        } else {
+            locationFields.style.display = 'none';
+            locationInputs.forEach(input => input.required = false);
+            if (map) {
+                map.remove();
+                map = null;
+            }
+        }
+    });
+
+    // Update map when location fields change
+    function updateMap() {
+        const address = document.getElementById('address').value;
+        const city = document.getElementById('city').value;
+        const state = document.getElementById('state').value;
+        const pincode = document.getElementById('pincode').value;
+
+        if (address && city && state && pincode) {
+            const query = `${address}, ${city}, ${state} ${pincode}`;
+            
+            // Use OpenStreetMap Nominatim API for geocoding
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        const lat = parseFloat(data[0].lat);
+                        const lon = parseFloat(data[0].lon);
+                        
+                        // Update hidden inputs
+                        document.getElementById('latitude').value = lat;
+                        document.getElementById('longitude').value = lon;
+                        
+                        // Update map
+                        if (map) {
+                            map.setView([lat, lon], 13);
+                            if (marker) {
+                                marker.setLatLng([lat, lon]);
+                            } else {
+                                marker = L.marker([lat, lon]).addTo(map);
+                            }
+                        }
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    }
+
+    // Add event listeners to location fields
+    ['address', 'city', 'state', 'pincode'].forEach(fieldId => {
+        document.getElementById(fieldId).addEventListener('change', updateMap);
+});
+</script>
+{% endblock content %} 

@@ -1,0 +1,399 @@
+{% extends 'patient/patientbase.html' %}
+{% block content %}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <h2 class="text-center">Student Support AI</h2>
+            <p class="text-center text-muted">Choose the type of assistance you need</p>
+            
+            <div class="text-center mb-4">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-lg btn-primary active" id="learningAssistantBtn" onclick="switchChatType('learning')">Learning Assistant</button>
+                    <button type="button" class="btn btn-lg btn-danger" id="emergencyHelpBtn" onclick="switchChatType('emergency')">Emergency Help</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-header d-flex align-items-center" id="chatHeader">
+                    <i class="fas fa-graduation-cap mr-2" id="chatIcon"></i>
+                    <span id="chatTitle">Learning Assistant</span>
+                    <div class="ml-auto">
+                        <span id="connectionStatus" class="badge badge-success">Connected</span>
+                    </div>
+                </div>
+
+                <!-- Sample questions based on chat type -->
+                <div class="card-body bg-light py-2 sample-questions" id="sampleQuestions">
+                    <div class="learning-samples">
+                        <small>Try asking: <a href="#" class="sample-q">Explain photosynthesis</a> | <a href="#" class="sample-q">How to solve quadratic equations</a> | <a href="#" class="sample-q">What is the water cycle</a></small>
+                    </div>
+                    <div class="emergency-samples" style="display: none;">
+                        <small>Try asking: <a href="#" class="sample-q">I can't pay my tuition fees</a> | <a href="#" class="sample-q">Need help with study materials</a> | <a href="#" class="sample-q">I might have to drop out</a></small>
+                    </div>
+                </div>
+
+                <div class="card-body chat-container" id="chatContainer" style="height: 400px; overflow-y: auto;">
+                    <div class="d-flex flex-column">
+                        <div class="chat-message bot-message mb-3">
+                            <div class="d-flex">
+                                <div class="chat-icon bot-icon mr-2" id="initialChatIcon">
+                                    <i class="fas fa-graduation-cap"></i>
+                                </div>
+                                <div class="chat-bubble bot-bubble p-3 rounded" id="welcomeMessage">
+                                    Hello! I'm your Learning Assistant powered by Gemini AI. Ask me any academic questions such as "Explain photosynthesis", "How to solve algebra equations?", or "Translate this English passage into Hindi".
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Chat messages will appear here -->
+                    </div>
+                </div>
+
+                <div class="card-footer bg-white">
+                    <form id="chatForm" class="d-flex">
+                        <input type="text" id="userInput" class="form-control mr-2" placeholder="Ask your question..." required>
+                        <button type="submit" class="btn btn-primary" id="sendButton">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                    <div class="text-muted mt-2 small">
+                        <i class="fas fa-info-circle"></i> Powered by Google Gemini AI
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .chat-bubble {
+        max-width: 80%;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .bot-bubble {
+        background-color: #f1f0f0;
+        color: #333;
+    }
+    .user-bubble {
+        background-color: #007bff;
+        color: white;
+        margin-left: auto;
+    }
+    .chat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+    }
+    .bot-icon {
+        background-color: #f1f0f0;
+        color: #666;
+    }
+    .user-icon {
+        background-color: #007bff;
+        color: white;
+    }
+    .typing-indicator {
+        display: inline-flex;
+        align-items: center;
+    }
+    .typing-indicator span {
+        height: 10px;
+        width: 10px;
+        margin: 0 1px;
+        background-color: #9E9EA1;
+        display: block;
+        border-radius: 50%;
+        opacity: 0.4;
+    }
+    .typing-indicator span:nth-of-type(1) {
+        animation: typing 1s infinite;
+    }
+    .typing-indicator span:nth-of-type(2) {
+        animation: typing 1s 0.33s infinite;
+    }
+    .typing-indicator span:nth-of-type(3) {
+        animation: typing 1s 0.66s infinite;
+    }
+    @keyframes typing {
+        0% { opacity: 0.4; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.2); }
+        100% { opacity: 0.4; transform: scale(1); }
+    }
+    #chatHeader.learning {
+        background-color: #007bff;
+        color: white;
+    }
+    #chatHeader.emergency {
+        background-color: #dc3545;
+        color: white;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const chatForm = document.getElementById('chatForm');
+        const userInput = document.getElementById('userInput');
+        const chatContainer = document.getElementById('chatContainer');
+        const sendButton = document.getElementById('sendButton');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const chatHeader = document.getElementById('chatHeader');
+        const chatIcon = document.getElementById('chatIcon');
+        const chatTitle = document.getElementById('chatTitle');
+        const initialChatIcon = document.getElementById('initialChatIcon');
+        const welcomeMessage = document.getElementById('welcomeMessage');
+        const learningAssistantBtn = document.getElementById('learningAssistantBtn');
+        const emergencyHelpBtn = document.getElementById('emergencyHelpBtn');
+        const learningSamples = document.querySelector('.learning-samples');
+        const emergencySamples = document.querySelector('.emergency-samples');
+        
+        let currentChatType = 'learning'; // Default chat type
+        let isProcessing = false;
+
+        // Sample question click handlers
+        document.querySelectorAll('.sample-q').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                userInput.value = this.textContent;
+                chatForm.dispatchEvent(new Event('submit'));
+            });
+        });
+
+        chatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (isProcessing) return; // Prevent multiple submissions
+            
+            const userMessage = userInput.value.trim();
+            if (!userMessage) return;
+            
+            // Disable form while processing
+            isProcessing = true;
+            sendButton.disabled = true;
+            userInput.disabled = true;
+            
+            // Add user message to chat
+            addMessageToChat('user', userMessage);
+            
+            // Clear input
+            userInput.value = '';
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Call Gemini API with chat type
+            fetchGeminiResponse(userMessage, currentChatType)
+                .finally(() => {
+                    // Re-enable form regardless of success/failure
+                    isProcessing = false;
+                    sendButton.disabled = false;
+                    userInput.disabled = false;
+                    userInput.focus();
+                });
+        });
+
+        function addMessageToChat(sender, message) {
+            const messageElement = document.createElement('div');
+            messageElement.className = `chat-message ${sender}-message mb-3`;
+            
+            if (sender === 'user') {
+                messageElement.innerHTML = `
+                    <div class="d-flex">
+                        <div class="chat-bubble user-bubble p-3 rounded">
+                            ${message}
+                        </div>
+                        <div class="chat-icon user-icon ml-2">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                `;
+            } else {
+                let iconClass = currentChatType === 'learning' ? 'graduation-cap' : 'hand-holding-medical';
+                
+                messageElement.innerHTML = `
+                    <div class="d-flex">
+                        <div class="chat-icon bot-icon mr-2">
+                            <i class="fas fa-${iconClass}"></i>
+                        </div>
+                        <div class="chat-bubble bot-bubble p-3 rounded">
+                            ${message}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            chatContainer.querySelector('.d-flex.flex-column').appendChild(messageElement);
+            
+            // Scroll to bottom
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const typingElement = document.createElement('div');
+            typingElement.id = 'typingIndicator';
+            typingElement.className = 'chat-message bot-message mb-3';
+            
+            let iconClass = currentChatType === 'learning' ? 'graduation-cap' : 'hand-holding-medical';
+            
+            typingElement.innerHTML = `
+                <div class="d-flex">
+                    <div class="chat-icon bot-icon mr-2">
+                        <i class="fas fa-${iconClass}"></i>
+                    </div>
+                    <div class="chat-bubble bot-bubble p-3 rounded">
+                        <div class="typing-indicator">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            chatContainer.querySelector('.d-flex.flex-column').appendChild(typingElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        async function fetchGeminiResponse(userMessage, chatType) {
+            try {
+                connectionStatus.className = 'badge badge-warning';
+                connectionStatus.innerText = 'Processing...';
+                
+                console.log(`Sending ${chatType} request with message: ${userMessage}`);
+                
+                // Call our server-side Gemini API endpoint
+                const response = await fetch('/patient/api/gemini', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCsrfToken()
+                    },
+                    body: JSON.stringify({ 
+                        message: userMessage,
+                        chatType: chatType 
+                    })
+                });
+                
+                // Update connection status
+                connectionStatus.className = 'badge badge-success';
+                connectionStatus.innerText = 'Connected';
+                
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log("Response data:", data);
+                
+                // Remove typing indicator
+                removeTypingIndicator();
+                
+                // Check if we got a proper response or error
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                if (!data.response || data.response.trim() === '') {
+                    throw new Error("Empty response received");
+                }
+                
+                // Add bot response to chat
+                addMessageToChat('bot', data.response);
+                
+            } catch (error) {
+                console.error('Error with Gemini API:', error);
+                removeTypingIndicator();
+                connectionStatus.className = 'badge badge-danger';
+                connectionStatus.innerText = 'Error';
+                
+                // Get fallback response based on chat type
+                let fallbackResponse = "";
+                if (currentChatType === 'learning') {
+                    fallbackResponse = "I'm having trouble processing your academic question right now. Could you try asking in a different way? For example, if you're asking about a complex topic, try breaking it down into simpler parts.";
+                } else {
+                    fallbackResponse = "I'm having trouble processing your emergency request. Please try again or consider using the 'Make Request' option directly to get help from our support team.";
+                }
+                
+                addMessageToChat('bot', fallbackResponse);
+            }
+        }
+        
+        // Function to switch between chat types
+        window.switchChatType = function(type) {
+            currentChatType = type;
+            
+            // Clear chat except the first message
+            const firstMessage = chatContainer.querySelector('.chat-message.bot-message');
+            const chatColumn = chatContainer.querySelector('.d-flex.flex-column');
+            
+            while (chatColumn.children.length > 1) {
+                chatColumn.removeChild(chatColumn.lastChild);
+            }
+            
+            // Update UI for selected chat type
+            if (type === 'learning') {
+                chatHeader.className = 'card-header d-flex align-items-center learning';
+                chatIcon.className = 'fas fa-graduation-cap mr-2';
+                chatTitle.textContent = 'Learning Assistant';
+                sendButton.className = 'btn btn-primary';
+                learningAssistantBtn.className = 'btn btn-lg btn-primary active';
+                emergencyHelpBtn.className = 'btn btn-lg btn-danger';
+                learningSamples.style.display = 'block';
+                emergencySamples.style.display = 'none';
+                
+                initialChatIcon.innerHTML = '<i class="fas fa-graduation-cap"></i>';
+                welcomeMessage.textContent = 'Hello! I\'m your Learning Assistant powered by Gemini AI. Ask me any academic questions such as "Explain photosynthesis", "How to solve algebra equations?", or "Translate this English passage into Hindi".';
+                userInput.placeholder = 'Ask your question...';
+            } else {
+                chatHeader.className = 'card-header d-flex align-items-center emergency';
+                chatIcon.className = 'fas fa-hand-holding-medical mr-2';
+                chatTitle.textContent = 'Emergency Help';
+                sendButton.className = 'btn btn-danger';
+                learningAssistantBtn.className = 'btn btn-lg btn-primary';
+                emergencyHelpBtn.className = 'btn btn-lg btn-danger active';
+                learningSamples.style.display = 'none';
+                emergencySamples.style.display = 'block';
+                
+                initialChatIcon.innerHTML = '<i class="fas fa-hand-holding-medical"></i>';
+                welcomeMessage.textContent = 'I\'m here to help with urgent educational needs. If you\'re facing issues like "I\'m being forced to drop out", "Fees due tomorrow", or "No access to net/books", please share your situation so I can assist you.';
+                userInput.placeholder = 'Describe your emergency...';
+            }
+        };
+        
+        // Initialize with Learning Assistant
+        switchChatType('learning');
+        
+        // Get CSRF token from cookies
+        function getCsrfToken() {
+            const name = 'csrftoken';
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (const cookie of cookies) {
+                    const trimmedCookie = cookie.trim();
+                    if (trimmedCookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(trimmedCookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    });
+</script>
+
+{% endblock content %} 

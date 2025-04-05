@@ -1,0 +1,166 @@
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.css">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet">
+
+    <!-- Main CSS -->
+    <link href="{% static 'css/main.css' %}" rel="stylesheet" media="all">
+
+    <style>
+        .student-background-options {
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .form-check {
+            display: flex;
+            align-items: flex-start;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        
+        .form-check:hover {
+            background-color: #e9ecef;
+        }
+        
+        .form-check-input {
+            margin-top: 5px;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        .form-check-label {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin: 0;
+            cursor: pointer;
+        }
+        
+        .form-row {
+            margin-bottom: 20px;
+        }
+        
+        .value {
+            width: 100%;
+        }
+        
+        .input-group {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    {% include "blood/navbar.html" %}
+
+    <div class="page-wrapper bg-gra-03 p-t-45 p-b-50">
+        <div class="wrapper wrapper--w790">
+            <br><br><br>
+            <div class="card card-5">
+                <div class="card-heading">
+                    <h2 class="title">Patient Signup</h2>
+                </div>
+                <div class="card-body">
+                    <form method="POST" autocomplete="off" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="form-row">
+                            <div class="name">First Name</div>
+                            <div class="value">
+                                <div class="input-group">
+                                    {% render_field userForm.first_name class="input--style-5" required="true" %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="name">Last Name</div>
+                            <div class="value">
+                                <div class="input-group">
+                                    {% render_field userForm.last_name class="input--style-5" required="true" %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="name">Username</div>
+                            <div class="value">
+                                <div class="input-group">
+                                    {% render_field userForm.username class="input--style-5" required="true" %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="name">Password</div>
+                            <div class="value">
+                                <div class="input-group">
+                                    {% render_field userForm.password class="input--style-5" required="true" %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="name">Address</div>
+                            <div class="value">
+                                <div class="input-group">
+                                    {% render_field patientForm.address class="input--style-5" required="true" %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="name">Mobile</div>
+                            <div class="value">
+                                <div class="input-group">
+                                    {% render_field patientForm.mobile class="input--style-5" required="true" %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="name">Profile Pic</div>
+                            <div class="value">
+                                <div class="input-group">
+                                    {% render_field patientForm.profile_pic class="input--style-5" required="true" %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <button class="btn btn--radius-2 btn-danger" type="submit">Register</button>
+                        </div>
+                    </form>
+                    <br>
+                    <p style="text-align: center;">Already have an account? <a style="text-decoration: none;" href="/patient/patientlogin">Click here to login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include "blood/footer.html" %}
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>

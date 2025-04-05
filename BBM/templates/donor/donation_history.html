@@ -1,0 +1,171 @@
+{% extends 'donor/donorbase.html' %}
+{% block content %}
+{% load widget_tweaks %}
+{%load static%}
+<head>
+    <style>
+        .label {
+            color: white;
+            padding: 8px;
+        }
+        
+        .success {background-color: #4CAF50;} /* Green */
+        .info {background-color: #2196F3;} /* Blue */
+        .warning {background-color: #ff9800;} /* Orange */
+        .danger {background-color: #f44336;} /* Red */
+        .other {background-color: #e7e7e7; color: black;} /* Gray */
+        
+        .donation-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 200px;
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .status-completed {
+            background-color: #4CAF50;
+        }
+        
+        .status-pending {
+            background-color: #ff9800;
+        }
+        
+        .status-failed {
+            background-color: #f44336;
+        }
+        
+        .status-refunded {
+            background-color: #9e9e9e;
+        }
+    </style>
+</head>
+<br><br>
+<div class="container">
+    <h4 class="text-center">My Financial Contribution History</h4>
+    <p class="text-center text-muted">Track all your financial contributions to support education</p>
+    <br>
+    
+    <!-- Donation Statistics -->
+    <div class="donation-stats">
+        <div class="stat-card bg-light">
+            <i class="fas fa-rupee-sign fa-2x text-success"></i>
+            <div class="stat-value text-success">₹{{ total_amount }}</div>
+            <div class="stat-label">Total Contributed</div>
+        </div>
+        
+        <div class="stat-card bg-light">
+            <i class="fas fa-check-circle fa-2x text-primary"></i>
+            <div class="stat-value text-primary">{{ completed_donations }}</div>
+            <div class="stat-label">Completed Donations</div>
+        </div>
+        
+        <div class="stat-card bg-light">
+            <i class="fas fa-clock fa-2x text-warning"></i>
+            <div class="stat-value text-warning">{{ pending_donations }}</div>
+            <div class="stat-label">Pending Donations</div>
+        </div>
+    </div>
+    
+    <!-- Donation History Table -->
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-history mr-2"></i> Donation History</h5>
+        </div>
+        <div class="card-body">
+            {% if donations %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Recipient</th>
+                                <th>Transaction ID</th>
+                                <th>Payment Method</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for donation in donations %}
+                            <tr>
+                                <td>{{ donation.date|date:"M d, Y" }}</td>
+                                <td>₹{{ donation.amount }}</td>
+                                <td>
+                                    {% if donation.patient_request %}
+                                        {{ donation.patient_request.patient_name }}
+                                    {% else %}
+                                        Education Fund
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if donation.transaction_id %}
+                                        <small class="text-muted">{{ donation.transaction_id }}</small>
+                                    {% else %}
+                                        <small class="text-muted">-</small>
+                                    {% endif %}
+                                </td>
+                                <td>{{ donation.payment_method }}</td>
+                                <td>
+                                    {% if donation.status == 'COMPLETED' %}
+                                        <span class="status-badge status-completed">Completed</span>
+                                    {% elif donation.status == 'PENDING' %}
+                                        <span class="status-badge status-pending">Pending</span>
+                                    {% elif donation.status == 'FAILED' %}
+                                        <span class="status-badge status-failed">Failed</span>
+                                    {% elif donation.status == 'REFUNDED' %}
+                                        <span class="status-badge status-refunded">Refunded</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-donate fa-4x text-muted mb-3"></i>
+                    <h5>No donations yet</h5>
+                    <p class="text-muted">Your financial contributions will appear here once you make a donation.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<!--
+developed By : sumit kumar
+facebook : fb.com/sumit.luv
+youtube : youtube.com/lazycoders
+-->
+{% endblock content %}

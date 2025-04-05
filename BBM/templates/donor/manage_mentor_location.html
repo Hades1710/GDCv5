@@ -1,0 +1,95 @@
+{% extends 'donor/donorbase.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container py-5">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Set Your Location</h4>
+        </div>
+        <div class="card-body">
+            <p class="mb-4">
+                Please provide your current location to find nearby students who need mentoring.
+            </p>
+
+            {% if messages %}
+            <div class="messages mb-4">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-group mb-3">
+                    <label for="id_location_name">Location Name</label>
+                    {{ form.location_name }}
+                    <small class="form-text text-muted">For example: Home, Office, School</small>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="id_address">Complete Address</label>
+                    {{ form.address }}
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="id_city">City</label>
+                            {{ form.city }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="id_state">State</label>
+                            {{ form.state }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="id_pincode">Postal/ZIP Code</label>
+                            {{ form.pincode }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group mt-4">
+                    <button type="submit" class="btn btn-primary">Save Location</button>
+                    <a href="{% url 'mentor_dashboard' %}" class="btn btn-secondary ml-2">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="card shadow mt-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Location-Based Mentoring</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 text-center mb-3 mb-md-0">
+                    <i class="fas fa-map-marker-alt fa-3x text-primary"></i>
+                </div>
+                <div class="col-md-9">
+                    <h5>How It Works</h5>
+                    <ol>
+                        <li>Enter your current location</li>
+                        <li>View students who need educational support near you</li>
+                        <li>Schedule an in-person visit to teach a subject you're skilled in</li>
+                        <li>Students will be notified and can confirm the visit</li>
+                        <li>Meet at the scheduled time and share your knowledge!</li>
+                    </ol>
+                    <p class="text-muted mb-0">
+                        <i class="fas fa-shield-alt mr-1"></i> Student location information is protected and only shared with verified mentors.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

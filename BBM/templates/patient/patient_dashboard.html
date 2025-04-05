@@ -1,0 +1,386 @@
+{% extends 'patient/patientbase.html' %}
+{% block content %}
+<head>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4cc9f0;
+            --success-color: #4CAF50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --text-muted: #6c757d;
+        }
+        
+        .dashboard-container {
+            padding: 30px 0;
+        }
+        
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .welcome-banner::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .welcome-banner::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            left: -80px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .welcome-banner h2 {
+            font-weight: 700;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .welcome-banner p {
+            opacity: 0.9;
+            margin-bottom: 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .stats-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stats-card .icon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 2.5rem;
+            opacity: 0.2;
+            color: var(--primary-color);
+        }
+        
+        .stats-card .label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+        
+        .stats-card .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+        
+        .stats-card .status {
+            font-size: 0.8rem;
+            padding: 5px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        .stats-card.pending {
+            border-top: 4px solid var(--warning-color);
+        }
+        
+        .stats-card.approved {
+            border-top: 4px solid var(--success-color);
+        }
+        
+        .stats-card.rejected {
+            border-top: 4px solid var(--danger-color);
+        }
+        
+        .stats-card.total {
+            border-top: 4px solid var(--primary-color);
+        }
+        
+        .student-info {
+            background-color: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-top: 25px;
+        }
+        
+        .student-info h3 {
+            color: var(--dark-color);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .student-info h3 i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+        
+        .info-item {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: var(--dark-color);
+            width: 150px;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .info-label i {
+            margin-right: 10px;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+        
+        .info-value {
+            color: var(--dark-color);
+            flex: 1;
+        }
+        
+        .background-badge {
+            display: inline-block;
+            padding: 8px 15px;
+            background-color: rgba(67, 97, 238, 0.1);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .quick-actions {
+            background-color: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-top: 25px;
+        }
+        
+        .quick-actions h3 {
+            color: var(--dark-color);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .quick-actions h3 i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+        
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .action-button {
+            background-color: var(--light-color);
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            color: var(--dark-color);
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .action-button:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-3px);
+            text-decoration: none;
+        }
+        
+        .action-button i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .action-button span {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .welcome-banner {
+                padding: 20px;
+            }
+            
+            .stats-card .value {
+                font-size: 2rem;
+            }
+            
+            .action-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<div class="dashboard-container container">
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <h2>Welcome, {{patient.get_name}}!</h2>
+        <p>Track your education requests and manage your student profile</p>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="row">
+        <div class="col-md-3 col-sm-6">
+            <div class="stats-card total">
+                <div class="icon">
+                    <i class="fas fa-paper-plane"></i>
+                </div>
+                <div class="label">TOTAL REQUESTS</div>
+                <div class="value">{{requestmade}}</div>
+                <div class="status">All Time</div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 col-sm-6">
+            <div class="stats-card pending">
+                <div class="icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="label">PENDING</div>
+                <div class="value">{{requestpending}}</div>
+                <div class="status" style="background-color: rgba(255, 152, 0, 0.1); color: var(--warning-color);">Awaiting Response</div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 col-sm-6">
+            <div class="stats-card approved">
+                <div class="icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="label">APPROVED</div>
+                <div class="value">{{requestapproved}}</div>
+                <div class="status" style="background-color: rgba(76, 175, 80, 0.1); color: var(--success-color);">Ready to Proceed</div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 col-sm-6">
+            <div class="stats-card rejected">
+                <div class="icon">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="label">REJECTED</div>
+                <div class="value">{{requestrejected}}</div>
+                <div class="status" style="background-color: rgba(244, 67, 54, 0.1); color: var(--danger-color);">Not Approved</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+        <div class="action-buttons">
+            <a href="/patient/make-request" class="action-button">
+                <i class="fas fa-file-alt"></i>
+                <span>New Request</span>
+            </a>
+            <a href="/patient/my-request" class="action-button">
+                <i class="fas fa-list-alt"></i>
+                <span>My Requests</span>
+            </a>
+            <a href="/patient/mentor-slots" class="action-button">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <span>Find Mentor</span>
+            </a>
+            <a href="/patient/my-mentor-sessions" class="action-button">
+                <i class="fas fa-calendar-check"></i>
+                <span>My Sessions</span>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Student Information Section -->
+    <div class="student-info">
+        <h3><i class="fas fa-user-graduate"></i> Student Profile</h3>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-user"></i> Full Name:</span>
+                    <span class="info-value">{{patient.get_name}}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-phone"></i> Phone:</span>
+                    <span class="info-value">{{patient.mobile}}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-map-marker-alt"></i> Address:</span>
+                    <span class="info-value">{{patient.address}}</span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-graduation-cap"></i> Education:</span>
+                    <span class="info-value">{{patient.education}}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-rupee-sign"></i> Annual Income:</span>
+                    <span class="info-value">₹{{patient.annual_income}}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-users"></i> Background:</span>
+                    <span class="info-value">
+                        <span class="background-badge">
+                            {{ patient.get_student_background_display }}
+                        </span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

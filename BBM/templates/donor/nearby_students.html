@@ -1,0 +1,118 @@
+{% extends 'donor/donorbase.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container py-5">
+    <h2 class="mb-4">Nearby Students</h2>
+    
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div class="row mb-4">
+        <div class="col-md-7">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Your Current Location</h5>
+                </div>
+                <div class="card-body">
+                    <h6>{{ mentor_location.location_name }}</h6>
+                    <p class="mb-0">{{ mentor_location.address }}, {{ mentor_location.city }}, {{ mentor_location.state }} {{ mentor_location.pincode }}</p>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'manage_mentor_location' %}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-edit"></i> Update Location
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Quick Links</h5>
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'mentor_visits' %}" class="btn btn-outline-primary btn-block mb-2">
+                        <i class="fas fa-clipboard-list"></i> View My Scheduled Visits
+                    </a>
+                    <a href="{% url 'mentor_dashboard' %}" class="btn btn-outline-secondary btn-block">
+                        <i class="fas fa-tachometer-alt"></i> Return to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card shadow">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">Students Near You</h4>
+        </div>
+        <div class="card-body">
+            {% if nearby_students %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Location</th>
+                            <th>Distance</th>
+                            <th>Educational Level</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student, distance in nearby_students %}
+                        <tr>
+                            <td>{{ student.get_name }}</td>
+                            <td>{{ student.location_name }}</td>
+                            <td>{{ student.formatted_distance }}</td>
+                            <td>{{ student.education|default:'Not specified' }}</td>
+                            <td>
+                                <a href="{% url 'schedule_visit' student.id %}" class="btn btn-sm btn-success">
+                                    <i class="fas fa-calendar-check"></i> Schedule Visit
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> No students found near your location. Please try expanding your search or check back later.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="card shadow mt-4">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">Tips for In-Person Mentoring</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 text-center mb-3 mb-md-0">
+                    <i class="fas fa-chalkboard-teacher fa-3x text-secondary"></i>
+                </div>
+                <div class="col-md-9">
+                    <ul>
+                        <li>Bring necessary teaching materials (books, worksheets, etc.)</li>
+                        <li>Arrive on time for scheduled sessions</li>
+                        <li>Focus on topics the student needs help with most</li>
+                        <li>Be patient and adapt your teaching style to the student's learning pace</li>
+                        <li>Provide clear explanations and examples</li>
+                        <li>End each session with a brief review of what was learned</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

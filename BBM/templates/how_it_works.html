@@ -1,0 +1,454 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How It Works - Kids Support Foundation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2ecc71;
+            --secondary-color: #27ae60;
+            --accent-color: #3498db;
+            --dark-color: #2c3e50;
+            --light-color: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            padding-top: 80px;
+        }
+
+        /* Navigation Styles */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .nav-link {
+            color: #2c3e50;
+            font-weight: 500;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-buttons .btn {
+            padding: 8px 20px;
+            border-radius: 25px;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-donor {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+        .btn-donor:hover {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-patient {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-patient:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Page Specific Styles */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 60px 0;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .section-title {
+            color: var(--dark-color);
+            margin-bottom: 30px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title:after {
+            content: '';
+            position: absolute;
+            width: 50%;
+            height: 3px;
+            background: var(--primary-color);
+            bottom: -10px;
+            left: 25%;
+        }
+
+        .process-section {
+            padding: 50px 0;
+        }
+
+        .process-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .process-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .process-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .process-title {
+            color: var(--dark-color);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .process-icon {
+            color: var(--accent-color);
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .divider {
+            height: 3px;
+            background: var(--light-color);
+            margin: 50px 0;
+        }
+
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 40px 0;
+            margin-top: 50px;
+        }
+
+        .cta-section {
+            background: var(--light-color);
+            padding: 60px 0;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+            color: white;
+        }
+
+        .cta-button.secondary {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .cta-button.secondary:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .criteria-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .criteria-list li {
+            padding: 8px 0;
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .criteria-list li:before {
+            content: '\f00c';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            color: var(--primary-color);
+            position: absolute;
+            left: 0;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 40px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-heartbeat me-2"></i>Kids Support Foundation
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/how-it-works">How It Works</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/#stats">Impact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/#testimonials">Success Stories</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/#contact">Contact</a>
+                    </li>
+                </ul>
+                <div class="nav-buttons">
+                    <a href="/donor/donorsignup" class="btn btn-donor">Become a Donor</a>
+                    <a href="/patient/patientsignup" class="btn btn-patient">Need Help</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <h1>How It Works</h1>
+            <p class="lead">Understand our donation process and how we help those in need</p>
+        </div>
+    </div>
+
+    <!-- Donor Process Section -->
+    <section class="process-section">
+        <div class="container">
+            <h2 class="section-title text-center mb-5">For Donors: How to Make a Difference</h2>
+            
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="process-card">
+                        <div class="process-number">1</div>
+                        <i class="fas fa-user-plus process-icon"></i>
+                        <h3 class="process-title">Create Your Donor Account</h3>
+                        <p>Sign up as a donor by providing your basic information and creating your account. This helps us verify your identity and keep track of your generous contributions.</p>
+                        <p>During registration, you'll also set your donation preferences to help match you with students who align with your giving goals:</p>
+                        <ul>
+                            <li>Student backgrounds you wish to support</li>
+                            <li>Educational interests you want to encourage</li>
+                            <li>Specific needs you'd like to address</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="process-card">
+                        <div class="process-number">2</div>
+                        <i class="fas fa-search process-icon"></i>
+                        <h3 class="process-title">Browse Student Requests</h3>
+                        <p>Once registered, you'll have access to your personalized dashboard that shows student requests matching your preferences. Each request includes:</p>
+                        <ul>
+                            <li>The student's profile and background</li>
+                            <li>Reason for requesting assistance</li>
+                            <li>Amount requested</li>
+                            <li>Current progress toward their goal</li>
+                        </ul>
+                        <p>Click on any request card to see additional details like educational interests, specific needs, and more information about the student.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="process-card">
+                        <div class="process-number">3</div>
+                        <i class="fas fa-credit-card process-icon"></i>
+                        <h3 class="process-title">Make Your Donation</h3>
+                        <p>When you find a request that resonates with you, simply click "Proceed to Payment" on the request card. On the payment page, you can:</p>
+                        <ul>
+                            <li>Enter the amount you wish to donate (within your balance)</li>
+                            <li>Review the student's details one more time</li>
+                            <li>Complete the payment process</li>
+                        </ul>
+                        <p>Our secure payment system will process your donation immediately, and the amount will be deducted from your account balance.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="process-card">
+                        <div class="process-number">4</div>
+                        <i class="fas fa-chart-line process-icon"></i>
+                        <h3 class="process-title">Track Your Impact</h3>
+                        <p>After completing your donation, you'll receive a confirmation with transaction details. You can always view your donation history in your dashboard.</p>
+                        <p>Watch as the student's funding progress bar increases with your contribution. You can track:</p>
+                        <ul>
+                            <li>Your total contributions</li>
+                            <li>How many students you've helped</li>
+                            <li>The progress of requests you've contributed to</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Student/Patient Process Section -->
+    <section class="process-section">
+        <div class="container">
+            <h2 class="section-title text-center mb-5">For Students: How to Request Support</h2>
+            
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="process-card">
+                        <div class="process-number">1</div>
+                        <i class="fas fa-user-graduate process-icon"></i>
+                        <h3 class="process-title">Create Your Student Account</h3>
+                        <p>Sign up as a student by providing your personal information and academic details. This helps us verify your eligibility and match you with potential donors.</p>
+                        <p>Your profile should include:</p>
+                        <ul>
+                            <li>Your basic contact information</li>
+                            <li>Current educational status</li>
+                            <li>A profile photo (optional but recommended)</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="process-card">
+                        <div class="process-number">2</div>
+                        <i class="fas fa-file-alt process-icon"></i>
+                        <h3 class="process-title">Submit Your Request</h3>
+                        <p>From your student dashboard, click on "Make Request" to submit a new funding request. You'll need to provide:</p>
+                        <ul>
+                            <li>Your name and age</li>
+                            <li>Reason for requesting financial assistance</li>
+                            <li>Current education level</li>
+                            <li>Annual family income</li>
+                            <li>Educational interests</li>
+                            <li>Specific needs you have</li>
+                            <li>The amount you're requesting</li>
+                        </ul>
+                        <p>Be specific and honest about your situation to help donors understand how they can make a difference in your education.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="process-card">
+                        <div class="process-number">3</div>
+                        <i class="fas fa-check-circle process-icon"></i>
+                        <h3 class="process-title">Request Review Process</h3>
+                        <p>Once submitted, your request will be reviewed by our team to ensure it meets our eligibility criteria:</p>
+                        <ul class="criteria-list">
+                            <li>Verified student status</li>
+                            <li>Clear educational purpose</li>
+                            <li>Reasonable request amount</li>
+                            <li>Complete and accurate information</li>
+                        </ul>
+                        <p>Approved requests will be visible to potential donors who match your educational interests and specific needs.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="process-card">
+                        <div class="process-number">4</div>
+                        <i class="fas fa-hand-holding-usd process-icon"></i>
+                        <h3 class="process-title">Receive Your Funds</h3>
+                        <p>As donors contribute to your request, you'll see the progress in your dashboard. Once your request is fully funded:</p>
+                        <ul>
+                            <li>You'll receive notification of completed funding</li>
+                            <li>Our team will process the disbursement</li>
+                            <li>Funds will be provided according to the specific needs outlined in your request</li>
+                        </ul>
+                        <p>We may require documentation for certain educational expenses to ensure the funds are used as intended.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2 class="mb-4">Ready to Get Started?</h2>
+            <p class="lead mb-5">Join our community today and be part of changing lives through education.</p>
+            <a href="/donor/donorsignup" class="cta-button">Become a Donor</a>
+            <a href="/patient/patientsignup" class="cta-button secondary">Request Support</a>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start">
+                    <h4><i class="fas fa-heartbeat me-2"></i>Kids Support Foundation</h4>
+                    <p>Empowering underprivileged children through education and support.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                    <p class="mt-3">© 2023 Kids Support Foundation. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

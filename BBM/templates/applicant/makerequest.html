@@ -1,0 +1,188 @@
+{% extends 'patient/patientbase.html' %}
+{% block content %}
+{% load widget_tweaks %}
+{%load static%}
+<head>
+        <!-- Font special for pages-->
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet">
+
+        <!-- Main CSS-->
+    
+        <link href="{% static "css/main.css" %}"rel="stylesheet" media="all">
+        <style>
+            .educational-options, .specific-needs-options {
+                padding: 10px;
+                background-color: #f8f9fa;
+                border-radius: 5px;
+                border: 1px solid #dee2e6;
+                width: 100%;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .form-check {
+                display: flex;
+                align-items: flex-start;
+                padding: 8px;
+                border-radius: 4px;
+                transition: background-color 0.2s;
+            }
+            
+            .form-check:hover {
+                background-color: #e9ecef;
+            }
+            
+            .form-check-input {
+                margin-top: 5px;
+                margin-right: 10px;
+                flex-shrink: 0;
+            }
+            
+            .form-check-label {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+                margin: 0;
+                cursor: pointer;
+            }
+
+            .input--style-5 {
+                width: 100%;
+                padding: 8px;
+                border: 1px solid #dee2e6;
+                border-radius: 4px;
+                transition: border-color 0.2s;
+            }
+
+            .input--style-5:focus {
+                border-color: #80bdff;
+                outline: 0;
+                box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+            }
+        </style>
+</head>
+<div class="page-wrapper bg-gra-03 p-t-45 p-b-50">
+    <div class="wrapper wrapper--w790">
+      
+        <div style="margin-left: 70px;" class="card card-5">
+            <div class="card-heading">
+                <h2 class="title">MAKE DONATION REQUEST</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST" autocomplete="off" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="form-row">
+                        <div class="name">Name</div>
+                        <div class="value">
+                            <div class="input-group">
+                                {% render_field request_form.patient_name|attr:'required:true'  class="input--style-5"  %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="name">Age</div>
+                        <div class="value">
+                            <div class="input-group">
+                                {% render_field request_form.patient_age|attr:'required:true'  class="input--style-5"  %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="name">Gender</div>
+                        <div class="value">
+                            <div class="input-group">
+                                <div class="rs-select2 js-select-simple select--no-search">
+                                    {% render_field request_form.gender|attr:'required:true' class="input--style-5" %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="name">Reason</div>
+                        <div class="value">
+                            <div class="input-group">
+                                {% render_field request_form.reason|attr:'required:true'  class="input--style-5"  %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="name">Education Level</div>
+                        <div class="value">
+                            <div class="input-group">
+                                <div class="educational-options">
+                                    {% render_field request_form.education|attr:'required:true' %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="name">Annual Income (₹)</div>
+                        <div class="value">
+                            <div class="input-group">
+                                {% render_field request_form.annual_income|attr:'required:true'  class="input--style-5"  %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="name">Educational Interest</div>
+                        <div class="value">
+                            <div class="input-group">
+                                <div class="educational-options">
+                                    {% render_field request_form.educational_interest|attr:'required:true' %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="name">Specific Needs</div>
+                        <div class="value">
+                            <div class="input-group">
+                                <div class="specific-needs-options">
+                                    {% render_field request_form.specific_needs|attr:'required:true' %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="name">Specially Abled</div>
+                        <div class="value">
+                            <div class="input-group">
+                                <div class="rs-select2 js-select-simple select--no-search">
+                                    {% render_field request_form.specially_abled|attr:'required:true' class="input--style-5" %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="name">Amount Needed (₹)</div>
+                        <div class="value">
+                            <div class="input-group">
+                                {% render_field request_form.amount|attr:'required:true'  class="input--style-5"  %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button class="btn btn--radius-2 btn-danger" type="submit">REQUEST</button>
+                    </div>
+                </form>
+                <br>
+                
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

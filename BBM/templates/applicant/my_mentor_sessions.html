@@ -1,0 +1,175 @@
+{% extends 'patient/patientbase.html' %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">My Mentor Sessions</h4>
+                    <a href="{% url 'mentor-slots' %}" class="btn btn-light">
+                        <i class="fas fa-search"></i> Find More Sessions
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <ul class="nav nav-tabs mb-4" id="sessionTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link active" id="upcoming-tab" data-toggle="tab" href="#upcoming" role="tab" aria-controls="upcoming" aria-selected="true">
+                                <i class="fas fa-calendar-alt"></i> Upcoming Sessions
+                                {% if upcoming_sessions %}
+                                    <span class="badge badge-primary ml-1">{{ upcoming_sessions|length }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" id="past-tab" data-toggle="tab" href="#past" role="tab" aria-controls="past" aria-selected="false">
+                                <i class="fas fa-history"></i> Past Sessions
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="sessionTabsContent">
+                        <!-- Upcoming Sessions Tab -->
+                        <div class="tab-pane fade show active" id="upcoming" role="tabpanel" aria-labelledby="upcoming-tab">
+                            {% if upcoming_sessions %}
+                                <div class="row">
+                                    {% for booking in upcoming_sessions %}
+                                        <div class="col-md-6 mb-4">
+                                            <div class="card h-100 {% if booking.status == 'confirmed' %}border-success{% endif %}">
+                                                <div class="card-header d-flex justify-content-between align-items-center">
+                                                    <h5 class="mb-0">{{ booking.mentor_slot.get_specialty_display }}</h5>
+                                                    {% if booking.status == 'pending' %}
+                                                        <span class="badge badge-warning">Pending</span>
+                                                    {% elif booking.status == 'confirmed' %}
+                                                        <span class="badge badge-success">Confirmed</span>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="card-body">
+                                                    <p>
+                                                        <strong>Mentor:</strong> {{ booking.mentor_slot.donor.get_name }}<br>
+                                                        <strong>Date:</strong> {{ booking.mentor_slot.available_date|date:"F d, Y" }}<br>
+                                                        <strong>Time:</strong> {{ booking.mentor_slot.available_time|time:"g:i A" }}<br>
+                                                        <strong>Mode:</strong> {{ booking.mentor_slot.get_teaching_mode_display }}
+                                                    </p>
+                                                    
+                                                    {% if booking.mentor_slot.teaching_mode == 'voice_call' %}
+                                                        <div class="alert alert-info">
+                                                            <i class="fas fa-phone"></i> The mentor will call you at 
+                                                            <strong>{{ booking.phone_number }}</strong> at the scheduled time.
+                                                        </div>
+                                                    {% elif booking.mentor_slot.teaching_mode == 'video_call' and booking.meeting_link %}
+                                                        <div class="alert alert-info">
+                                                            <i class="fas fa-video"></i> Join the video call at the scheduled time:
+                                                            <a href="{{ booking.meeting_link }}" target="_blank" class="btn btn-primary btn-sm mt-2">
+                                                                <i class="fas fa-external-link-alt"></i> Join Google Meet
+                                                            </a>
+                                                            <small class="d-block mt-1">
+                                                                <i class="fas fa-info-circle"></i> Save this link! You'll need it to join the session.
+                                                            </small>
+                                                        </div>
+                                                    {% elif booking.mentor_slot.teaching_mode == 'in_person' %}
+                                                        <div class="alert alert-info">
+                                                            <i class="fas fa-map-marker-alt"></i> This is an in-person session. Please arrive on time.
+                                                        </div>
+                                                    {% endif %}
+                                                    
+                                                    {% if booking.notes %}
+                                                        <div class="mt-3">
+                                                            <strong>Your Notes:</strong>
+                                                            <p class="font-italic">{{ booking.notes }}</p>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="card-footer bg-white">
+                                                    <a href="{% url 'cancel-mentor-booking' booking.id %}" 
+                                                       class="btn btn-outline-danger btn-sm"
+                                                       onclick="return confirm('Are you sure you want to cancel this session? This action cannot be undone.')">
+                                                        <i class="fas fa-times"></i> Cancel Session
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="text-center py-5">
+                                    <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                                    <h4>No Upcoming Sessions</h4>
+                                    <p class="text-muted">You don't have any upcoming mentor sessions.</p>
+                                    <a href="{% url 'mentor-slots' %}" class="btn btn-primary">
+                                        <i class="fas fa-search"></i> Find Sessions
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Past Sessions Tab -->
+                        <div class="tab-pane fade" id="past" role="tabpanel" aria-labelledby="past-tab">
+                            {% if past_sessions %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th>Subject</th>
+                                                <th>Mentor</th>
+                                                <th>Date & Time</th>
+                                                <th>Mode</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for booking in past_sessions %}
+                                                <tr>
+                                                    <td>{{ booking.mentor_slot.get_specialty_display }}</td>
+                                                    <td>{{ booking.mentor_slot.donor.get_name }}</td>
+                                                    <td>
+                                                        {{ booking.mentor_slot.available_date|date:"M d, Y" }}<br>
+                                                        <small>{{ booking.mentor_slot.available_time|time:"g:i A" }}</small>
+                                                    </td>
+                                                    <td>{{ booking.mentor_slot.get_teaching_mode_display }}</td>
+                                                    <td>
+                                                        {% if booking.status == 'completed' %}
+                                                            <span class="badge badge-info">Completed</span>
+                                                        {% elif booking.status == 'cancelled' %}
+                                                            <span class="badge badge-danger">Cancelled</span>
+                                                        {% else %}
+                                                            <span class="badge badge-secondary">Expired</span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-5">
+                                    <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                                    <h4>No Past Sessions</h4>
+                                    <p class="text-muted">You don't have any past mentor sessions.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Initialize popovers
+    $(function () {
+        $('[data-toggle="popover"]').popover({
+            trigger: 'focus',
+            html: true
+        });
+    });
+</script>
+{% endblock content %}

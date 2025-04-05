@@ -1,0 +1,206 @@
+{% extends 'donor/donorbase.html' %}
+{% block content %}
+{% load widget_tweaks %}
+{%load static%}
+<head>
+    <style>
+        .payment-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 600px;
+        }
+
+        .payment-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .payment-details {
+            margin-bottom: 30px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: #666;
+        }
+
+        .detail-value {
+            font-weight: 500;
+        }
+
+        .payment-amount {
+            font-size: 2rem;
+            color: #2ecc71;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .payment-actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .btn-pay {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-pay:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.2);
+        }
+
+        .btn-cancel {
+            background: #e74c3c;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .btn-cancel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.2);
+        }
+
+        .donation-amount-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+            outline: none;
+        }
+
+        .form-text {
+            margin-top: 5px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+    </style>
+</head>
+
+<div class="container">
+    <div class="payment-card">
+        <div class="payment-header">
+            <h2>Payment Details</h2>
+        </div>
+
+        <div class="payment-details">
+            <div class="detail-row">
+                <span class="detail-label">Patient Name</span>
+                <span class="detail-value">{{request.patient_name}}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Request Date</span>
+                <span class="detail-value">{{request.date}}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Reason</span>
+                <span class="detail-value">{{request.reason}}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Your Balance</span>
+                <span class="detail-value">₹{{donor.max_donation_amount}}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Original Request Amount</span>
+                <span class="detail-value">₹{{request.amount}}</span>
+            </div>
+        </div>
+
+        <div class="donation-amount-section">
+            <div class="form-group">
+                <label for="donation-amount" class="detail-label">Enter Amount to Donate (₹)</label>
+                <input type="number" 
+                       class="form-control" 
+                       id="donation-amount" 
+                       min="0" 
+                       max="{{request.amount}}"
+                       step="100"
+                       placeholder="Enter amount">
+                <small class="form-text">Maximum amount: ₹{{request.amount}}</small>
+            </div>
+        </div>
+
+        <div class="payment-actions">
+            <button id="paymentButton" onclick="proceedToPayment()" class="btn-pay">Proceed to Payment</button>
+            <a href="{% url 'donor-dashboard' %}" class="btn-cancel">Cancel</a>
+        </div>
+    </div>
+</div>
+
+<script>
+function proceedToPayment() {
+    const amountInput = document.getElementById('donation-amount');
+    const amount = parseFloat(amountInput.value);
+    const paymentButton = document.getElementById('paymentButton');
+    
+    if (!amount || amount <= 0) {
+        alert('Please enter a valid amount');
+        return;
+    }
+    
+    const requestAmount = parseFloat("{{request.amount}}".replace(/[^0-9.-]+/g,""));
+    if (amount > requestAmount) {
+        alert('Amount cannot exceed the requested amount of ₹{{request.amount}}');
+        return;
+    }
+    
+    const donorBalance = parseFloat("{{donor.max_donation_amount}}".replace(/[^0-9.-]+/g,""));
+    if (amount > donorBalance) {
+        alert('Amount exceeds your maximum donation limit');
+        return;
+    }
+    
+    // Show processing state
+    paymentButton.innerText = 'Processing...';
+    paymentButton.disabled = true;
+    paymentButton.style.opacity = '0.7';
+    
+    // Redirect to payment processing page
+    window.location.href = "/donor/process-payment/{{request.id}}?amount=" + amount;
+}
+</script>
+
+{% endblock content %} 

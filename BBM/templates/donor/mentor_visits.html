@@ -1,0 +1,125 @@
+{% extends 'donor/donorbase.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container py-5">
+    <h2 class="mb-4">My Scheduled Visits</h2>
+    
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div class="row mb-4">
+        <div class="col">
+            <a href="{% url 'nearby_students' %}" class="btn btn-primary">
+                <i class="fas fa-map-marker-alt mr-2"></i> Find Nearby Students
+            </a>
+            <a href="{% url 'mentor_dashboard' %}" class="btn btn-secondary">
+                <i class="fas fa-tachometer-alt mr-2"></i> Return to Dashboard
+            </a>
+        </div>
+    </div>
+    
+    <div class="card shadow mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4>Upcoming Visits</h4>
+        </div>
+        <div class="card-body">
+            {% if upcoming_visits %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Location</th>
+                            <th>Date & Time</th>
+                            <th>Subject</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for visit in upcoming_visits %}
+                        <tr>
+                            <td>{{ visit.student.get_name }}</td>
+                            <td>{{ visit.student.location_name }}</td>
+                            <td>{{ visit.visit_date|date:"M d, Y" }} at {{ visit.visit_time|time:"h:i A" }}</td>
+                            <td>{{ visit.subject }}</td>
+                            <td>
+                                {% if visit.status == 'scheduled' %}
+                                <span class="badge bg-warning text-dark">Scheduled</span>
+                                {% elif visit.status == 'confirmed' %}
+                                <span class="badge bg-success">Confirmed</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{% url 'complete_visit' visit.id %}" class="btn btn-sm btn-success">
+                                        <i class="fas fa-check"></i> Complete
+                                    </a>
+                                    <a href="{% url 'cancel_visit' visit.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to cancel this visit?')">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted">You don't have any upcoming visits scheduled.</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="card shadow">
+        <div class="card-header bg-secondary text-white">
+            <h4>Past Visits</h4>
+        </div>
+        <div class="card-body">
+            {% if past_visits %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Location</th>
+                            <th>Date & Time</th>
+                            <th>Subject</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for visit in past_visits %}
+                        <tr>
+                            <td>{{ visit.student.get_name }}</td>
+                            <td>{{ visit.student.location_name }}</td>
+                            <td>{{ visit.visit_date|date:"M d, Y" }} at {{ visit.visit_time|time:"h:i A" }}</td>
+                            <td>{{ visit.subject }}</td>
+                            <td>
+                                {% if visit.status == 'completed' %}
+                                <span class="badge bg-success">Completed</span>
+                                {% elif visit.status == 'cancelled' %}
+                                <span class="badge bg-danger">Cancelled</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted">You don't have any past visits.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

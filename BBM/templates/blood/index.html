@@ -1,0 +1,181 @@
+{% load static %}
+<!DOCTYPE html>
+
+<head>
+    <style>
+        .xyz{
+          margin-bottom: 0px;
+          background-image: url('{% static "image/homepage.jpg" %}');
+          background-size: cover;
+          background-repeat: no-repeat;
+        }
+      </style>
+      
+</head>
+
+
+<body>
+  {% include "blood/navbar.html" %}
+<br>
+<section id="section-jumbotron" style="margin-bottom: 0px;" class="jumbotron jumbotron-fluid d-flex justify-content-center align-items-center xyz">
+    <div class="container text-center">
+        <br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+     
+      
+      <br><br><br><br>
+      
+    </div>  
+  </section>
+
+
+  <div class="jumbotron" style="margin-top: 0px;margin-bottom: 0px;">
+
+    <p class="lead text-center">"Donate Blood Save Lives"
+      </p>
+    
+    <p class="text-center">Made By - Mrinal, Chinmay, Nitin
+    
+  </div>
+  {% include "blood/footer.html" %}
+  
+     
+
+      <!-- Chatbot Button -->
+      <div class="chatbot-button" id="chatbotButton">
+          <button class="chat-icon">
+              <i class="fas fa-comments"></i>
+          </button>
+      </div>
+
+      <!-- Chatbot Container -->
+      <div class="chatbot-container" id="chatbotContainer">
+          <div class="chatbot-header">
+              <h3>Chat with us</h3>
+              <button class="close-button" id="closeChatbot">&times;</button>
+          </div>
+          <div class="chatbot-messages" id="chatMessages">
+              <!-- Messages will appear here -->
+          </div>
+          <div class="chatbot-input">
+              <input type="text" id="userInput" placeholder="Type your message...">
+              <button id="sendMessage">Send</button>
+          </div>
+      </div>
+
+      <!-- Add Font Awesome for the chat icon -->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+      <style>
+          .chatbot-button {
+              position: fixed;
+              bottom: 20px;
+              right: 20px;
+              z-index: 1000;
+          }
+
+          .chat-icon {
+              width: 60px;
+              height: 60px;
+              border-radius: 50%;
+              background-color: #007bff;
+              border: none;
+              color: white;
+              font-size: 24px;
+              cursor: pointer;
+              box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+          }
+
+          .chatbot-container {
+              display: none;
+              position: fixed;
+              bottom: 100px;
+              right: 20px;
+              width: 300px;
+              height: 400px;
+              background: white;
+              border-radius: 10px;
+              box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+              z-index: 1000;
+          }
+
+          .chatbot-header {
+              padding: 10px;
+              background: #007bff;
+              color: white;
+              border-radius: 10px 10px 0 0;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+          }
+
+          .close-button {
+              background: none;
+              border: none;
+              color: white;
+              font-size: 24px;
+              cursor: pointer;
+          }
+
+          .chatbot-messages {
+              height: 300px;
+              padding: 10px;
+              overflow-y: auto;
+          }
+
+          .chatbot-input {
+              padding: 10px;
+              display: flex;
+              border-top: 1px solid #eee;
+          }
+
+          .chatbot-input input {
+              flex: 1;
+              padding: 8px;
+              border: 1px solid #ddd;
+              border-radius: 4px;
+              margin-right: 8px;
+          }
+
+          .chatbot-input button {
+              padding: 8px 16px;
+              background: #007bff;
+              color: white;
+              border: none;
+              border-radius: 4px;
+              cursor: pointer;
+          }
+      </style>
+
+      <script>
+          document.getElementById('chatbotButton').addEventListener('click', function() {
+              document.getElementById('chatbotContainer').style.display = 'block';
+          });
+
+          document.getElementById('closeChatbot').addEventListener('click', function() {
+              document.getElementById('chatbotContainer').style.display = 'none';
+          });
+
+          document.getElementById('sendMessage').addEventListener('click', function() {
+              const input = document.getElementById('userInput');
+              const message = input.value.trim();
+              if (message) {
+                  const messagesDiv = document.getElementById('chatMessages');
+                  messagesDiv.innerHTML += <p><strong>You:</strong> ${message}</p>;
+                  input.value = '';
+                  // Add your chatbot logic here
+              }
+          });
+      </script>
+
+     
+  </body>
+
+
+</body>
+
+</html>
+<!--
+developed By : sumit kumar
+facebook : fb.com/sumit.luv
+youtube : youtube.com/lazycoders
+-->

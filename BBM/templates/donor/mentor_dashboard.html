@@ -1,0 +1,174 @@
+{% extends 'donor/donorbase.html' %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Mentor Dashboard</h4>
+                    <a href="{% url 'add_mentor_slot' %}" class="btn btn-light">
+                        <i class="fas fa-plus"></i> Add New Slot
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <ul class="nav nav-tabs mb-4" id="mentorTabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="available-tab" data-toggle="tab" href="#available" role="tab" aria-controls="available" aria-selected="true">
+                                <i class="fas fa-calendar-alt"></i> Available Slots
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="booked-tab" data-toggle="tab" href="#booked" role="tab" aria-controls="booked" aria-selected="false">
+                                <i class="fas fa-calendar-check"></i> Booked Sessions
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="mentorTabsContent">
+                        <!-- Available Slots Tab -->
+                        <div class="tab-pane fade show active" id="available" role="tabpanel" aria-labelledby="available-tab">
+                            {% if mentor_slots %}
+                                <div class="row">
+                                    {% for slot in mentor_slots %}
+                                        <div class="col-md-6 mb-4">
+                                            <div class="card h-100">
+                                                <div class="card-body">
+                                                    <h5 class="card-title text-primary">
+                                                        <i class="fas fa-book"></i> {{ slot.specialty }}
+                                                    </h5>
+                                                    <p class="card-text">
+                                                        <strong>Date:</strong> {{ slot.available_date|date:"F d, Y" }}<br>
+                                                        <strong>Time:</strong> {{ slot.available_time|time:"g:i A" }}<br>
+                                                        <strong>Teaching Mode:</strong> {{ slot.get_teaching_mode_display }}<br>
+                                                        {% if slot.description %}
+                                                            <strong>Description:</strong> {{ slot.description }}
+                                                        {% endif %}
+                                                    </p>
+
+                                                    {% if slot.teaching_mode == 'in_person' %}
+                                                        <div class="location-info mt-3">
+                                                            <h6><i class="fas fa-map-marker-alt"></i> Location Details:</h6>
+                                                            <p class="mb-1"><strong>Name:</strong> {{ slot.location_name }}</p>
+                                                            <p class="mb-1"><strong>Address:</strong> {{ slot.address }}</p>
+                                                            <p class="mb-1"><strong>City:</strong> {{ slot.city }}</p>
+                                                            <p class="mb-1"><strong>State:</strong> {{ slot.state }}</p>
+                                                            <p class="mb-1"><strong>Pincode:</strong> {{ slot.pincode }}</p>
+                                                            
+                                                            <div class="map-container mt-2">
+                                                                <iframe
+                                                                    width="100%"
+                                                                    height="200"
+                                                                    style="border:0"
+                                                                    loading="lazy"
+                                                                    allowfullscreen
+                                                                    referrerpolicy="no-referrer-when-downgrade"
+                                                                    src="https://www.openstreetmap.org/export/embed.html?bbox=0,0,0,0&layer=mapnik&marker=0,0">
+                                                                </iframe>
+                                                                <a href="https://www.openstreetmap.org/search?query={{ slot.address|urlencode }},{{ slot.city|urlencode }},{{ slot.state|urlencode }} {{ slot.pincode|urlencode }}"
+                                                                   target="_blank"
+                                                                   class="btn btn-primary btn-sm mt-2">
+                                                                    <i class="fas fa-map-marker-alt"></i> View Location on OpenStreetMap
+                                                        </a>
+                                                    </div>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="card-footer">
+                                                    <a href="{% url 'delete_mentor_slot' slot.id %}" class="btn btn-danger btn-sm">
+                                                        <i class="fas fa-trash"></i> Delete Slot
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="text-center py-5">
+                                    <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                                    <h5>No Available Slots</h5>
+                                    <p class="text-muted">Add a new slot to start mentoring students.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Booked Sessions Tab -->
+                        <div class="tab-pane fade" id="booked" role="tabpanel" aria-labelledby="booked-tab">
+                            {% if booked_sessions %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Student</th>
+                                                <th>Subject</th>
+                                                <th>Date & Time</th>
+                                                <th>Mode</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for booking in booked_sessions %}
+                                                <tr>
+                                                    <td>{{ booking.patient.get_name }}</td>
+                                                    <td>{{ booking.mentor_slot.specialty }}</td>
+                                                    <td>
+                                                        {{ booking.mentor_slot.available_date|date:"M d, Y" }}<br>
+                                                        <small>{{ booking.mentor_slot.available_time|time:"g:i A" }}</small>
+                                                    </td>
+                                                    <td>{{ booking.mentor_slot.get_teaching_mode_display }}</td>
+                                                    <td>
+                                                        {% if booking.status == 'pending' %}
+                                                            <span class="badge badge-warning">Pending</span>
+                                                        {% elif booking.status == 'confirmed' %}
+                                                            <span class="badge badge-success">Confirmed</span>
+                                                        {% elif booking.status == 'completed' %}
+                                                            <span class="badge badge-info">Completed</span>
+                                                        {% else %}
+                                                            <span class="badge badge-danger">Cancelled</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                                {% if booking.status == 'pending' %}
+                                                            <a href="{% url 'confirm_mentor_session' booking.id %}" class="btn btn-success btn-sm">
+                                                                        <i class="fas fa-check"></i> Confirm
+                                                                    </a>
+                                                            <a href="{% url 'cancel_mentor_session' booking.id %}" class="btn btn-danger btn-sm">
+                                                                <i class="fas fa-times"></i> Cancel
+                                                            </a>
+                                                        {% elif booking.status == 'confirmed' %}
+                                                            <a href="{% url 'complete_mentor_session' booking.id %}" class="btn btn-primary btn-sm">
+                                                                <i class="fas fa-check-double"></i> Complete
+                                                            </a>
+                                                            <a href="{% url 'cancel_mentor_session' booking.id %}" class="btn btn-danger btn-sm">
+                                                                        <i class="fas fa-times"></i> Cancel
+                                                                    </a>
+                                                                {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-5">
+                                    <i class="fas fa-calendar-check fa-3x text-muted mb-3"></i>
+                                    <h5>No Booked Sessions</h5>
+                                    <p class="text-muted">Your booked sessions will appear here.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

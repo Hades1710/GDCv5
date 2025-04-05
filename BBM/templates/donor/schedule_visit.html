@@ -1,0 +1,93 @@
+{% extends 'donor/donorbase.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container py-5">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Schedule Visit with {{ student.get_name }}</h4>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h5>Student Information</h5>
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Name</th>
+                            <td>{{ student.get_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Location</th>
+                            <td>{{ student.location_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Education Level</th>
+                            <td>{{ student.education|default:"Not specified" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Background</th>
+                            <td>{{ student.get_student_background_display|default:"Not specified" }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h5>Visit Details</h5>
+                    <p>
+                        You are scheduling an in-person visit to teach {{ student.get_name }}. Please select a convenient date, time, and the subject you will teach.
+                    </p>
+                    <p class="text-danger">
+                        <i class="fas fa-exclamation-circle"></i> The student will need to confirm this visit before it's finalized.
+                    </p>
+                </div>
+            </div>
+
+            {% if messages %}
+            <div class="messages mb-4">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="id_visit_date">Date</label>
+                            {{ form.visit_date }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="id_visit_time">Time</label>
+                            {{ form.visit_time }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="id_subject">Subject to Teach</label>
+                    {{ form.subject }}
+                    <small class="form-text text-muted">Specify the subject or topic you will cover during this visit</small>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="id_notes">Additional Notes</label>
+                    {{ form.notes }}
+                    <small class="form-text text-muted">Optional: Any additional information about the teaching session</small>
+                </div>
+                
+                <div class="form-group mt-4">
+                    <button type="submit" class="btn btn-primary">Schedule Visit</button>
+                    <a href="{% url 'nearby_students' %}" class="btn btn-secondary ml-2">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

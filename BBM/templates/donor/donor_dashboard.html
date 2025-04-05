@@ -1,0 +1,619 @@
+{% extends 'donor/donorbase.html' %}
+{% block content %}
+{% load widget_tweaks %}
+{% load custom_filters %}
+{%load static%}
+<head>
+    <style>
+        .request-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .request-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .request-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .request-body {
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .profile-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #3498db;
+            flex-shrink: 0;
+        }
+
+        .request-info {
+            flex-grow: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .additional-info {
+            display: none;
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .additional-info.show {
+            display: block;
+        }
+
+        .expand-icon {
+            margin-left: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .expand-icon.rotated {
+            transform: rotate(180deg);
+        }
+
+        .pay-now-btn {
+            display: inline-block;
+            padding: 10px 25px;
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .pay-now-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.2);
+            color: white;
+            text-decoration: none;
+        }
+
+        .pay-now-container {
+            text-align: center;
+            padding-top: 10px;
+            border-top: 1px solid #e9ecef;
+            margin-top: 15px;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .no-requests {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .donor-profile {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .donor-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #3498db;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .donor-info {
+            flex-grow: 1;
+        }
+
+        .donor-name {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .donor-email {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .request-body {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .profile-photo {
+                width: 80px;
+                height: 80px;
+            }
+
+            .donor-profile {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .donor-photo {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        .donation-amount-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .progress-section {
+            margin: 15px 0;
+            padding: 10px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #2ecc71 0%, #27ae60 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-amount {
+            font-weight: 500;
+            color: #2ecc71;
+        }
+
+        .progress-percentage {
+            color: #666;
+        }
+
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        .form-text {
+            margin-top: 5px;
+            font-size: 0.85rem;
+        }
+
+        .contributors-info {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .contributors-info i {
+            color: #3498db;
+        }
+        
+        .default-progress-section {
+            flex: 1;
+            margin: 15px 0;
+            padding: 10px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .category-tabs {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background: #f8f9fa;
+            color: #2c3e50;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn i {
+            font-size: 1.1em;
+        }
+
+        .tab-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: #3498db;
+            color: white;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+        }
+
+        .request-card {
+            display: none; /* Hide all cards by default */
+        }
+
+        .request-card.visible {
+            display: block; /* Show only visible cards */
+        }
+    </style>
+</head>
+<br><br>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Welcome, {{donor.get_name}}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="donor-profile">
+                        {% if donor.profile_pic %}
+                            <img src="/static/{{donor.profile_pic}}" alt="Donor Profile" class="donor-photo">
+                        {% else %}
+                            <img src="/static/image/default-profile.png" alt="Default Profile" class="donor-photo">
+                        {% endif %}
+                        <div class="donor-info">
+                            <h2 class="donor-name">{{donor.get_name}}</h2>
+                            <p class="donor-email">{{donor.user.email}}</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4>Your Profile</h4>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Mobile:</strong> {{donor.mobile}}</p>
+                                    <p><strong>Address:</strong> {{donor.address}}</p>
+                                    <p><strong>Maximum Donation Amount:</strong> ${{donor.max_donation_amount}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title mt-5">Recent Patient Requests</h3>
+                    
+                    <!-- Category Tabs -->
+                    <div class="category-tabs mb-4">
+                        <button class="tab-btn active" data-category="all">
+                            <i class="fas fa-list"></i> All Requests
+                        </button>
+                        <button class="tab-btn" data-category="specially-abled">
+                            <i class="fas fa-wheelchair"></i> Specially Abled
+                        </button>
+                        <button class="tab-btn" data-category="school">
+                            <i class="fas fa-school"></i> School
+                        </button>
+                        <button class="tab-btn" data-category="phd">
+                            <i class="fas fa-graduation-cap"></i> PhD
+                        </button>
+                        <button class="tab-btn" data-category="female">
+                            <i class="fas fa-female"></i> Female
+                        </button>
+                        <button class="tab-btn" data-category="college">
+                            <i class="fas fa-university"></i> College
+                        </button>
+                        <button class="tab-btn" data-category="children">
+                            <i class="fas fa-child"></i> Children (0-12)
+                        </button>
+                    </div>
+
+                    {% if patient_requests %}
+                        {% for request in patient_requests %}
+                            <div class="request-card" 
+                                data-age="{{request.patient_age}}"
+                                data-gender="{{request.gender}}"
+                                data-specially-abled="{{request.specially_abled}}"
+                                data-education="{{request.education}}"
+                                onclick="toggleCard(this)">
+                                <div class="request-header">
+                                    <h4>{{request.patient_name}}</h4>
+                                    <i class="fas fa-chevron-down expand-icon"></i>
+                                </div>
+                                <div class="request-body">
+                                    {% if request.request_by_patient.profile_pic %}
+                                        <img src="/static/{{request.request_by_patient.profile_pic}}" alt="Patient Profile" class="profile-photo">
+                                    {% else %}
+                                        <img src="/static/image/default-profile.png" alt="Default Profile" class="profile-photo">
+                                    {% endif %}
+                                    <div class="request-info">
+                                        <div class="info-item" style="grid-column: 1 / -1;">
+                                            <span class="info-label">Reason</span>
+                                            <span class="info-value">{{request.reason}}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Amount Requested</span>
+                                            <span class="info-value">₹{{request.amount}}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Gender</span>
+                                            <span class="info-value">
+                                                {% if request.gender == 'female' %}
+                                                    <i class="fas fa-female" style="color: #e83e8c;"></i>
+                                                {% else %}
+                                                    <i class="fas fa-male" style="color: #007bff;"></i>
+                                                {% endif %}
+                                                {{request.get_gender_display}}
+                                            </span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Specially Abled</span>
+                                            <span class="info-value">
+                                                {% if request.specially_abled == 'yes' %}
+                                                    <span style="color: #e74c3c; font-weight: bold;">Yes</span>
+                                                {% else %}
+                                                    <span style="color: #2ecc71;">No</span>
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="default-progress-section">
+                                        <div class="progress-info">
+                                            <span>Donation Progress</span>
+                                            <span class="progress-amount">₹{{request.donated_amount|default:"0"}} / ₹{{request.amount}}</span>
+                                            <span class="progress-percentage">{{request.donated_amount|default:"0"|div:request.amount|mul:100|floatformat:1}}%</span>
+                                        </div>
+                                        <div class="progress-bar-container">
+                                            <div class="progress-bar" style="width: {{request.donated_amount|default:'0'|div:request.amount|mul:100}}%"></div>
+                                        </div>
+                                        <div class="contributors-info">
+                                            <i class="fas fa-users"></i>
+                                            <span>{{request.contributors_count}} Contributor{{request.contributors_count|pluralize}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="additional-info">
+                                    <div class="request-info">
+                                        <div class="info-item">
+                                            <span class="info-label">Age</span>
+                                            <span class="info-value">{{request.patient_age}}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Educational Interest</span>
+                                            <span class="info-value">{{request.get_educational_interest_display}}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Specific Needs</span>
+                                            <span class="info-value">{{request.get_specific_needs_display}}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Date</span>
+                                            <span class="info-value">{{request.date}}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Education Level</span>
+                                            <span class="info-value">{{request.get_education_display}}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Annual Income</span>
+                                            <span class="info-value">₹{{request.annual_income}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="pay-now-container">
+                                        <button onclick="validateAndProceed({{request.id}})" class="pay-now-btn">
+                                            <i class="fas fa-wallet mr-2"></i> Proceed to Payment
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="no-requests">
+                            <i class="fas fa-info-circle fa-2x mb-3"></i>
+                            <p>No patient requests available at the moment.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleCard(card) {
+    const additionalInfo = card.querySelector('.additional-info');
+    const expandIcon = card.querySelector('.expand-icon');
+    
+    additionalInfo.classList.toggle('show');
+    expandIcon.classList.toggle('rotated');
+}
+
+function validateAndProceed(requestId) {
+    event.preventDefault(); // Prevent default form submission
+    event.stopPropagation(); // Prevent event bubbling
+    
+    // Use the correct URL pattern for payment
+    const url = `/donor/make-payment/${requestId}`;
+    console.log('Redirecting to:', url); // Debug log
+    window.location.href = url;
+}
+
+// Add event listeners to prevent card toggle when clicking on buttons
+document.addEventListener('DOMContentLoaded', function() {
+    const requestCards = document.querySelectorAll('.request-card');
+    requestCards.forEach(card => {
+        const button = card.querySelector('.pay-now-btn');
+        
+        if (button) {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Get all tab buttons and request cards
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const requestCards = document.querySelectorAll('.request-card');
+
+    // Function to filter cards based on category
+    function filterCards(category) {
+        requestCards.forEach(card => {
+            const age = parseInt(card.dataset.age);
+            const gender = card.dataset.gender.toLowerCase();
+            const speciallyAbled = card.dataset.speciallyAbled;
+
+            let shouldShow = false;
+
+            switch(category) {
+                case 'all':
+                    shouldShow = true;
+                    break;
+                case 'specially-abled':
+                    shouldShow = speciallyAbled === 'yes';
+                    break;
+                case 'school':
+                    shouldShow = age >= 0 && age <= 18;
+                    break;
+                case 'phd':
+                    shouldShow = card.dataset.education.toLowerCase() === 'phd';
+                    break;
+                case 'female':
+                    shouldShow = card.dataset.gender.toLowerCase() === 'female';
+                    break;
+                case 'college':
+                    const education = card.dataset.education.toLowerCase();
+                    shouldShow = education === 'undergraduate' || education === 'postgraduate';
+                    break;
+                case 'children':
+                    shouldShow = age >= 0 && age <= 12;
+                    break;
+            }
+
+            card.classList.toggle('visible', shouldShow);
+        });
+    }
+
+    // Add click event listeners to tab buttons
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Remove active class from all buttons
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            // Add active class to clicked button
+            button.classList.add('active');
+            // Filter cards based on category
+            filterCards(button.dataset.category);
+        });
+    });
+
+    // Initially show all cards
+    filterCards('all');
+    requestCards.forEach(card => card.classList.add('visible'));
+});
+</script>
+
+<!--
+developed By : sumit kumar
+facebook : fb.com/sumit.luv
+youtube : youtube.com/lazycoders
+-->
+{% endblock content %}

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.css">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+  <style type="text/css">
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #3498db;
+      --accent-color: #e74c3c;
+      --text-color: #ffffff;
+      --hover-color: #2980b9;
+      --gradient-start: #2c3e50;
+      --gradient-middle: #3498db;
+      --gradient-end: #2980b9;
+    }
+
+    .navbar {
+      background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-middle) 50%, var(--gradient-end) 100%);
+      padding: 15px 0;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .navbar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
+                  linear-gradient(-45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
+                  linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.1) 75%),
+                  linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.1) 75%);
+      background-size: 20px 20px;
+      opacity: 0.1;
+      pointer-events: none;
+    }
+
+    .navbar.scrolled {
+      padding: 10px 0;
+      background: linear-gradient(135deg, rgba(44, 62, 80, 0.95) 0%, rgba(52, 152, 219, 0.95) 50%, rgba(41, 128, 185, 0.95) 100%);
+      backdrop-filter: blur(10px);
+    }
+
+    .navbar-brand {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text-color) !important;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      align-items: center;
+      transition: all 0.3s ease;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .navbar-brand i {
+      font-size: 28px;
+      margin-right: 10px;
+      animation: heartbeat 1.5s ease-in-out infinite;
+      color: #e74c3c;
+    }
+
+    @keyframes heartbeat {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .navbar-brand:hover {
+      transform: translateY(-2px);
+      text-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .nav-link {
+      color: var(--text-color) !important;
+      font-weight: 500;
+      font-size: 15px;
+      padding: 8px 15px !important;
+      margin: 0 5px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%);
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+    }
+
+    .nav-link:hover::before {
+      transform: translateX(0);
+    }
+
+    .nav-link:hover {
+      transform: translateY(-2px);
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .nav-link i {
+      margin-right: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .nav-link:hover i {
+      transform: translateY(-2px);
+      color: #e74c3c;
+    }
+
+    .navbar-toggler {
+      border: none;
+      padding: 0.5rem;
+      outline: none !important;
+    }
+
+    .navbar-toggler-icon {
+      background-image: none;
+      position: relative;
+      height: 2px;
+      width: 24px;
+      background: var(--text-color);
+      transition: all 0.3s ease;
+    }
+
+    .navbar-toggler-icon::before,
+    .navbar-toggler-icon::after {
+      content: '';
+      position: absolute;
+      height: 2px;
+      width: 24px;
+      background: var(--text-color);
+      transition: all 0.3s ease;
+    }
+
+    .navbar-toggler-icon::before {
+      top: -8px;
+    }
+
+    .navbar-toggler-icon::after {
+      bottom: -8px;
+    }
+
+    .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon {
+      background: transparent;
+    }
+
+    .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::before {
+      transform: rotate(45deg);
+      top: 0;
+    }
+
+    .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::after {
+      transform: rotate(-45deg);
+      bottom: 0;
+    }
+
+    @media (max-width: 768px) {
+      .navbar-collapse {
+        background: linear-gradient(135deg, rgba(44, 62, 80, 0.95) 0%, rgba(52, 152, 219, 0.95) 50%, rgba(41, 128, 185, 0.95) 100%);
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 10px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        backdrop-filter: blur(10px);
+      }
+
+      .nav-link {
+        padding: 10px 15px !important;
+        margin: 5px 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+
+
+  <div class="bs-example">
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top">
+      <a href="/" class="navbar-brand">
+        <i class="fas fa-heartbeat"></i>
+        Kids Support Foundation
+      </a>
+      <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+
+
+        <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/"><i class="fas fa-home"></i>&nbsp; Home</i></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/patient/patientlogin"><i class="fas fa-procedures"></i>&nbsp; Patient</i></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/donor/donorlogin"><i class="fas fa-user"></i>&nbsp; Donor</i></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/adminlogin"><i class="fas fa-user-shield"></i>&nbsp; Admin</i></a>
+                </li>
+                
+            </ul>
+        </div>
+
+
+
+
+      </div>
+    </nav>
+  </div>
+
+  <script>
+    $(window).scroll(function() {
+      if ($(window).scrollTop() > 50) {
+        $('.navbar').addClass('scrolled');
+      } else {
+        $('.navbar').removeClass('scrolled');
+      }
+    });
+  </script>
+
+<!--
+developed By : sumit kumar
+facebook : fb.com/sumit.luv
+youtube : youtube.com/lazycoders
+-->
+</body>
+
+</html>

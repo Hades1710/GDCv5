@@ -1,0 +1,251 @@
+{% extends 'donor/donorbase.html' %}
+{% load donor_extras %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-chart-line"></i> Your Impact Dashboard</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <div class="jumbotron bg-light p-4">
+                                <h2 class="display-4">Hello, {{ donor.get_name }}!</h2>
+                                <p class="lead">Your generosity is making a real difference in people's lives. Here's a summary of your impact so far.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Impact Summary Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card text-center h-100 border-success">
+                                <div class="card-body">
+                                    <div class="display-4 text-success mb-2">
+                                        <i class="fas fa-rupee-sign"></i>
+                                    </div>
+                                    <h5 class="card-title">Financial Support</h5>
+                                    <h2 class="display-4">₹{{ total_amount_donated }}</h2>
+                                    <p class="card-text text-muted">Total amount donated</p>
+                                </div>
+                                <div class="card-footer bg-success text-white">
+                                    <small>Supporting education needs</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-center h-100 border-info">
+                                <div class="card-body">
+                                    <div class="display-4 text-info mb-2">
+                                        <i class="fas fa-chalkboard-teacher"></i>
+                                    </div>
+                                    <h5 class="card-title">Mentoring Sessions</h5>
+                                    <h2 class="display-4">{{ completed_sessions }}</h2>
+                                    <p class="card-text text-muted">Completed mentoring sessions</p>
+                                </div>
+                                <div class="card-footer bg-info text-white">
+                                    <small>{{ upcoming_sessions }} upcoming sessions</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-center h-100 border-warning">
+                                <div class="card-body">
+                                    <div class="display-4 text-warning mb-2">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <h5 class="card-title">Students Helped</h5>
+                                    <h2 class="display-4">{{ students_helped }}</h2>
+                                    <p class="card-text text-muted">Students mentored</p>
+                                </div>
+                                <div class="card-footer bg-warning text-white">
+                                    <small>Changing lives through education</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Impact Visualization -->
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Your Impact Visualization</h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="impactChart" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Activity Timeline -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-history"></i> Your Impact Timeline</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="timeline">
+                                        {% for item in timeline_items %}
+                                            <div class="timeline-item">
+                                                <div class="timeline-item-marker">
+                                                    <div class="timeline-item-marker-text">{{ item.date|date:"M d" }}</div>
+                                                    <div class="timeline-item-marker-indicator bg-{% if item.type == 'donation' %}primary{% elif item.type == 'payment' %}success{% else %}info{% endif %}">
+                                                        <i class="fas fa-{{ item.icon }}"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="timeline-item-content">
+                                                    <p class="fw-bold">{{ item.description }}</p>
+                                                    <p class="text-muted small">{{ item.date|date:"F d, Y - g:i A" }}</p>
+                                                </div>
+                                            </div>
+                                        {% empty %}
+                                            <div class="text-center py-4">
+                                                <i class="fas fa-info-circle fa-2x text-muted mb-2"></i>
+                                                <p>No activities recorded yet. Start donating or mentoring to see your impact!</p>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Motivational Quote -->
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="card bg-dark text-white">
+                                <div class="card-body text-center p-4">
+                                    <h4><i class="fas fa-quote-left mr-2"></i> The purpose of life is not to be happy. It is to be useful, to be honorable, to be compassionate, to have it make some difference that you have lived and lived well. <i class="fas fa-quote-right ml-2"></i></h4>
+                                    <p class="mb-0 mt-2">- Ralph Waldo Emerson</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden data elements to pass Django data to JavaScript -->
+<div id="impact-data" 
+     data-amount="{{ total_amount_donated|default:0 }}" 
+     data-sessions="{{ completed_sessions|default:0 }}" 
+     data-students="{{ students_helped|default:0 }}">
+</div>
+
+<style>
+    /* Timeline Styles */
+    .timeline {
+        position: relative;
+        padding: 1rem 0;
+    }
+    
+    .timeline::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 1rem;
+        height: 100%;
+        width: 2px;
+        background-color: #e9ecef;
+    }
+    
+    .timeline-item {
+        position: relative;
+        padding: 0 0 2rem 2.5rem;
+    }
+    
+    .timeline-item:last-child {
+        padding-bottom: 0;
+    }
+    
+    .timeline-item-marker {
+        position: absolute;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .timeline-item-marker-text {
+        font-size: 0.75rem;
+        color: #6c757d;
+        margin-bottom: 0.25rem;
+    }
+    
+    .timeline-item-marker-indicator {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        color: #fff;
+    }
+    
+    .timeline-item-content {
+        background-color: #f8f9fa;
+        border-radius: 0.25rem;
+        padding: 1rem;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get data from hidden element
+        const dataElement = document.getElementById('impact-data');
+        const totalAmountDonated = Math.floor(parseInt(dataElement.getAttribute('data-amount')) / 100) || 0;
+        const completedSessions = parseInt(dataElement.getAttribute('data-sessions')) || 0;
+        const studentsHelped = parseInt(dataElement.getAttribute('data-students')) || 0;
+        
+        // Chart data
+        const ctx = document.getElementById('impactChart').getContext('2d');
+        const impactChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Financial Support (₹100s)', 'Mentoring Sessions', 'Students Helped'],
+                datasets: [{
+                    label: 'Your Impact',
+                    data: [
+                        totalAmountDonated,
+                        completedSessions,
+                        studentsHelped
+                    ],
+                    backgroundColor: [
+                        'rgba(40, 167, 69, 0.7)',
+                        'rgba(23, 162, 184, 0.7)',
+                        'rgba(255, 193, 7, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(40, 167, 69, 1)',
+                        'rgba(23, 162, 184, 1)',
+                        'rgba(255, 193, 7, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+{% endblock content %}

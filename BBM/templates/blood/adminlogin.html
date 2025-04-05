@@ -1,0 +1,139 @@
+{%load static%}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet">
+    <link href="{% static "css/main.css" %}" rel="stylesheet" media="all">
+    <style>
+      .page-wrapper {
+        padding: 60px 0;
+      }
+      .wrapper--w790 {
+        max-width: 790px;
+        margin: 0 auto;
+      }
+      .card-5 {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+      }
+      .card-heading {
+        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        border-radius: 10px 10px 0 0;
+        padding: 30px;
+        text-align: center;
+      }
+      .card-heading h2 {
+        color: #fff;
+        font-size: 24px;
+        font-weight: 600;
+        margin: 0;
+      }
+      .card-body {
+        padding: 30px;
+      }
+      .form-row {
+        margin-bottom: 20px;
+      }
+      .name {
+        font-size: 15px;
+        font-weight: 500;
+        color: #2c3e50;
+        margin-bottom: 8px;
+      }
+      .input--style-5 {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #e0e0e0;
+        border-radius: 5px;
+        font-size: 15px;
+        transition: all 0.3s ease;
+      }
+      .input--style-5:focus {
+        border-color: #2ecc71;
+        box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.1);
+        outline: none;
+      }
+      .btn--radius-2 {
+        border-radius: 5px;
+        padding: 10px 30px;
+        font-size: 15px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      .btn-danger {
+        background: #2ecc71;
+        border: none;
+        color: #fff;
+        transition: all 0.3s ease;
+      }
+      .btn-danger:hover {
+        background: #27ae60;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+      }
+      .alert {
+        margin-bottom: 20px;
+        padding: 15px;
+        border-radius: 5px;
+      }
+      .alert-danger {
+        background: #fee2e2;
+        border: 1px solid #fecaca;
+        color: #dc2626;
+      }
+    </style>
+  </head>
+  <body>
+    {% include "blood/navbar.html" %}
+
+    <div class="page-wrapper bg-gra-03 p-t-45 p-b-50">
+      <div class="wrapper wrapper--w790">
+        <div class="card card-5">
+          <div class="card-heading">
+            <h2 class="title">Admin Login</h2>
+          </div>
+          <div class="card-body">
+            {% if messages %}
+              {% for message in messages %}
+                <div class="alert alert-danger">{{ message }}</div>
+              {% endfor %}
+            {% endif %}
+            <form method="POST">
+              {% csrf_token %}
+              <div class="form-row">
+                <div class="name">Username</div>
+                <div class="value">
+                  <div class="input-group">
+                    <input type="text" name="username" class="input--style-5" required>
+                  </div>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="name">Password</div>
+                <div class="value">
+                  <div class="input-group">
+                    <input type="password" name="password" class="input--style-5" required>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <button class="btn btn--radius-2 btn-danger" type="submit">Login</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% include "blood/footer.html" %}
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  </body>
+</html>
