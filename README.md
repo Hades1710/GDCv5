@@ -3,7 +3,8 @@
 
 **Empowering Underprivileged Kids through Donations, Mentorship, and AI-Powered Support**
 
-![Home Page]!(https://github.com/user-attachments/assets/1f973d7e-62a2-4efa-9c1e-da9376f63c0d)
+[Home Page] ![Screenshot (139)](https://github.com/user-attachments/assets/240c0d66-5e2e-482e-87f2-0daf998a24cb)
+
 
 
 ---
@@ -44,18 +45,21 @@ Integrated with Google’s Gemini API, our intelligent chatbot helps students:
 ## 📸 Screenshots
 
 ### 🧾 Donor Dashboard  
-![Donor Dashboard]!(https://github.com/user-attachments/assets/2c0f41bc-385d-4fbc-b09b-ca9deb8f9bc4)
+[Donor Dashboard]![Screenshot (122)](https://github.com/user-attachments/assets/c2183b12-9502-4dc5-97d7-b8adba12b295)
+
 
 
 ### 🎓 Mentorship Dashboard  
-![Mentor Dashboard]![Screenshot (128)](https://github.com/user-attachments/assets/86257c41-0428-4adb-851c-2b511604ebc3)
+[Mentor Dashboard]![Screenshot (128)](https://github.com/user-attachments/assets/86257c41-0428-4adb-851c-2b511604ebc3)
 
 
 ### 📍 Nearby Students (Geolocation)  
-![Nearby Students](Screenshot%20(136).png)
+[Nearby Students]![Screenshot (136)](https://github.com/user-attachments/assets/79d4409c-f5b7-471d-aaa4-0d7642549263)
+
 
 ### 🧒 Student Profile Dashboard  
-![Student Dashboard](Screenshot%20(129).png)
+[Student Dashboard]![Screenshot (129)](https://github.com/user-attachments/assets/1b9c2d81-e63b-40d5-8d16-0c41c84bbc06)
+
 
 ---
 
