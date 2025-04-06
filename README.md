@@ -48,7 +48,8 @@ Integrated with Google’s Gemini API, our intelligent chatbot helps students:
 
 
 ### 🎓 Mentorship Dashboard  
-![Mentor Dashboard](Screenshot%20(128).png)
+![Mentor Dashboard]![Screenshot (128)](https://github.com/user-attachments/assets/86257c41-0428-4adb-851c-2b511604ebc3)
+
 
 ### 📍 Nearby Students (Geolocation)  
 ![Nearby Students](Screenshot%20(136).png)
