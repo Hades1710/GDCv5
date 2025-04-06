@@ -3,7 +3,8 @@
 
 **Empowering Underprivileged Kids through Donations, Mentorship, and AI-Powered Support**
 
-![Home Page](image.png)
+![Home Page]!(https://github.com/user-attachments/assets/1f973d7e-62a2-4efa-9c1e-da9376f63c0d)
+
 
 ---
 
@@ -43,7 +44,8 @@ Integrated with Google’s Gemini API, our intelligent chatbot helps students:
 ## 📸 Screenshots
 
 ### 🧾 Donor Dashboard  
-![Donor Dashboard](Screenshot%20(122).png)
+![Donor Dashboard]!(https://github.com/user-attachments/assets/2c0f41bc-385d-4fbc-b09b-ca9deb8f9bc4)
+
 
 ### 🎓 Mentorship Dashboard  
 ![Mentor Dashboard](Screenshot%20(128).png)
